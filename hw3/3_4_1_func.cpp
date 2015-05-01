@@ -128,7 +128,7 @@ void in2post(newStack & optr_con, newStack & oprd_con, const string & input) //�
 	for(unsigned int i=0; ;i++)
 	{
 		//掃每個字元
-		cout << "i =" << i << endl;
+		//cout << "i =" << i << endl;
 		char it = input[i];
 		if(i==input.size())
 		{
