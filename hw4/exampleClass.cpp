@@ -2,9 +2,12 @@
 
 void example::exampleInit()
 {
-	for(int i=0; i<1025; i++)
+	for(int i=0; i< maxfeatures; i++)
 	{
 		features[i] = 0;
 	}
-	return;
+	for(int i=0; i< maxfeatures; i++)
+	{
+		confusion[i] = 99999;
+	}
 }

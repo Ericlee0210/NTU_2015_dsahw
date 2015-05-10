@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
 	FILE * pfile;
 	ofstream outputfile;
-	outputfile.open("tree_pred_func.cpp");
+	outputfile.open("tree_pred_func.cpp", ios::out);
 	double epsilon;
 	char * epsilon_c;
 	int number_of_recur = 1;
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	{
 		fileName = argv[1];
 		epsilon_c = argv[2];
-		epsilon = atof(epsilon_c);
+		epsilon = atod(epsilon_c);
 	}
 	else
 	{
