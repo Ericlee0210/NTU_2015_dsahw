@@ -4,7 +4,8 @@
 #include <sstream>  //istringstream
 #include <string>
 #include <ctime>
-#include "func.h"
+#include <algorithm>
+#include "forest_func.h"
 #include "structure.h"
 #include "exampleClass.h"
 
@@ -15,14 +16,14 @@ int main(int argc, char *argv[])
 	std::ifstream  pfile;
 	srand(time(NULL));
 	int howManyTrees;
-	char * howManyTrees.c;
+	char * howManyTrees_c;
 	int number_of_recur = 1;  //跑幾次迴圈
 	char * fileName = NULL;   //用來讀檔案名
 	if( argc == 3 )
 	{
 		fileName = argv[1];
-		howManyTrees.c = argv[2];
-		howManyTrees =  atoi(howManyTrees.c) ;
+		howManyTrees_c = argv[2];
+		howManyTrees =  atoi(howManyTrees_c) ;
 	}
 	else
 	{
@@ -75,7 +76,28 @@ int main(int argc, char *argv[])
 			container.push_back(a);
 		}
 
-		make_decision(number_of_recur, 0 , biggest_index, container);
+		int size_of_container = container.size();
+		int total_example_I_should_extract = size_of_container/3;
+
+		
+		std::cout << "int forest_predict(double *attr)\n";
+		std::cout << "{\n";
+		std::cout << "    int number_of_yes=0, number_of_no=0;\n"; 
+		
+		for(int i=0; i<howManyTrees; i++)
+		{
+			knuthShuffle(container.begin(), container.end());
+			newVec knuthShuffleOrderContainer(container.begin(), container.begin()+total_example_I_should_extract-1);
+			make_decision(number_of_recur, i, 0 , biggest_index, knuthShuffleOrderContainer);
+		}
+
+		std::cout << "    //voting\n";
+		std::cout << "    if( number_of_yes > number_of_no)\n";
+		std::cout << "        return 1;\n";
+		std::cout << "    else\n";
+		std::cout << "        return -1;\n";
+		std::cout << "}";
+		
 	}
 	pfile.close();
 	return 0;
