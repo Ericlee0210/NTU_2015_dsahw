@@ -4,6 +4,6 @@
 #include "exampleClass.h"
 
 
-typedef vector<example> newVec;
+typedef std::vector<example> newVec;
 
 #endif

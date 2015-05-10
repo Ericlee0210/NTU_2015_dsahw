@@ -1,6 +1,6 @@
 #ifndef EXAMPLECLASS_H
 #define EXAMPLECLASS_H
-#define maxfeatures 1025;
+#define maxfeatures 1025
 
 class example
 {
