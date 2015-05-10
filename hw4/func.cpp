@@ -2,7 +2,9 @@
 #include <cmath>
 #include "func.h"
 #include "struture.h"
+#include "locationOfMinCon.h"
 #include "exampleClass.h"
+
 double confusion(double a, double b)
 {
 	if(a == 0 && b == 0)
@@ -102,8 +104,8 @@ void make_decision(int number_of_recur, newVec & tree, ofstream & outputfile)
 	//confusion < epsilon的狀況
 	//還沒做
 
-	//whereIsMinCon tmp;  裡面包含 index for example, index for features, double for confusion
-	//tmp.confusion =1;
+	locationOfMinCon tmp;  //裡面包含 index for example, index for features, double for confusion
+	tmp.confusion =99999;  //初始比較值，
 
 	//找到切哪一刀，將tree劃分為二
 	for(i=0; i<maxfeatures; i++)
