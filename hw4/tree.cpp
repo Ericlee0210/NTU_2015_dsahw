@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
 			container.push_back(a);
 		}
 		make_decision(number_of_recur, container, outputfile);
-		//畫出來
 	}
 	fclose(pfile);
+	outputfile.close();
 	return 0;
 }

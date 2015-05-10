@@ -13,7 +13,7 @@ double confusion(double a, double b)
 	{
 		double tmp1 = (a / (a+b)) * (a / (a+b));
 		double tmp2 = (b / (a+b)) * (b / (a+b));
-		return 1 - tmp1 - tmp2;
+		return ( 1 - tmp1 - tmp2 );
 	}
 }
 
@@ -22,37 +22,35 @@ double totalConfusion(double a, double b, double c, double d)
 	double tmp1 = (a+b)/ (a+b+c+d);
 	double tmp2 = (c+d)/ (a+b+c+d);
 
-	if(a==0 && b==0)
-		return ( 99999 + tmp2*confusion(c,d) );
-	else if (c==0 && d==0)
-		return ( tmp1*confusion(a,b) + 99999  );
-	else
-		return ( tmp1*confusion(a,b) + tmp2*confusion(c, d) );
+	return ( tmp1*confusion(a,b) + tmp2*confusion(c, d) );
 }
 
 
 double calCon(int i, int j, newVec& tree)
 {
-	int leftYN[2]  = {0,0};  //前面為no, 後為yes
-	int rightYN[2] = {0,0};  //前面為no, 後為yes
+	int leftYN[2]  = {0,0};  //左邊for yes, 前面為no, 後為yes
+	int rightYN[2] = {0,0};  //右邊for no, 前面為no, 後為yes
 
 	//統計當基準為tree[j].features[i]時，左右兩邊的Y/N共多少
 	for(newVec::iterator q = tree.begin(); q!=tree.end(); q++)
 	{
-		double = 0.000001;
-		if(*q.features[i] < tree[j].features[i] || fabs(*q.features[i] - tree[j].features[i])< e  )  //左邊有多少Y/N
-		{
-			if(*q.result==1)
-				leftYN[1]++;
-			else
-				leftYN[0]++;
-		}
-		else //右邊有多少Y/N
+		double e = 0.000001;
+		/****************************************************/
+		/*這邊有個問題，features數值等於基準時，要算左邊還是右邊？***/
+		/****************************************************/
+		if( fabs(*q.features[i] - tree[j].features[i]) < e || *q.features[i] < tree[j].features[i] )  //左邊有多少Y/N
 		{
 			if(*q.result==1)
 				rightYN[1]++;
 			else
-				rightYN[0]++;			
+				rightYN[0]++;
+		}
+		else //左邊有多少Y/N
+		{
+			if(*q.result==1)
+				leftYN[1]++;
+			else
+				leftYN[0]++;			
 		}
 	}
 
@@ -74,36 +72,48 @@ void findCon(int i, int j, double confusion, locationOfMinCon& c)
 	return;
 }
 
+void indentation(int number_of_recur, ofstream& outputfile)
+{
+	for(int i=0; i<number_of_recur; i++)
+	{
+		outputfile << "    ";
+	}
+}
 
 void make_decision(int number_of_recur, newVec & tree, ofstream & outputfile)
 {
 	//跑第一次，要印出function函數名字與argument
 	if(number_of_recur ==1)
-		outputfile << "int tree_predict(double *attr){\n";
+	{
+		outputfile << "int tree_predict(double *attr)\n";
+		outputfile << "{\n";
+	}
 
 	int i, j; //i for every example, j for every features
 	int number_of_example = tree.size();
 
-	//統計目前yes / no數量
+	//統計目前tree的yes / no數量
 	int number_of_yes=0, number_of_no=0;
-	for(int s=0; s<number_of_example; s++)
+	for(newVec::iterator s=tree.begin(); s!=tree.end(); s++)
 	{
-		if(tree[s].result==1)
+		if(*s.result==1)
 			number_of_yes++;
 		else
 			number_of_no++;
 	}
 
-	//已經沒得切哩~~
+	//for subtree，已經沒得切哩~~
 	if(number_of_yes!=0 || number_of_no==0)
 	{
-		//indentation(number_of_recur);
+		indentation(number_of_recur, outputfile);
 		outputfile << "reture 1;\n"; 
+		return;
 	}
 	if(number_of_yes==0 || number_of_yes!=0)
 	{
-		//indentation(number_of_recur);
+		indentation(number_of_recur, outputfile);
 		outputfile << "reture 0;\n";
+		return;
 	}
 
 	//confusion < epsilon的狀況
@@ -117,29 +127,68 @@ void make_decision(int number_of_recur, newVec & tree, ofstream & outputfile)
 	{
 		for(j=0; j<number_of_example; j++)
 		{
-			double confusion = calCon(i, j, number_of_example, tree);
+			double confusion = calCon(i, j, tree);
 			findCon(i, j, confusion, tmp); 
 		}
 	}
-
+	
 	//無法切了，無論怎麼切都無法一分為二，其中一邊都是0Y0N，confusion超大	
+	/**********************************************/
+	/*這邊有個問題，yes與no數量一樣時，要return 多少？***/
+	/**********************************************/
 	if(tmp.totalConfusion >= 99999)
 	{
-		if(number_of_yes >= number_of_no)
+		if(number_of_yes >= number_of_no)   //<<<<<<<<<問題所在
 		{
-			indentation(nubmer_of_recur);
+			//indentation(nubmer_of_recur, outputfile);
 			outputfile << "return 1;\n";
 		}
 		else
 		{
-			indentation(nubmer_of_recur);
+			//indentation(nubmer_of_recur, outputfile);
 			outputfile << "return 0;\n";
 		}
 	}
 
+	int index_for_example_cpy = tmp.index_for_example;
+	int index_for_features_cpy = tmp.index_for_features;
+	double value_of_features = tree[index_for_example_cpy].features[index_for_features_cpy];
+	
+	newVec left_subtree;
+	newVec right_subtree;
+
 	//產生subtree
 	for(newVec::iterator q= tree.begin(); q!=tree.end(); q++)
 	{
-		if()
+		/****************************************************/
+		/*這邊有個問題，features數值等於基準時，要算左邊還是右邊？***/
+		/****************************************************/
+		if( fabs( *q.features[index_for_features_cpy] - tree[index_for_example_cpy].features[index_for_features] ) < e  || 
+			*q.features[index_for_features_cpy] < tree[index_for_example_cpy].features[index_for_features] 
+		  ) 
+			right_subtree.push_back(*q);
+		else
+			left_subtree.push_back(*q);
 	}
+	indentation(number_of_recur, outputfile);
+	outputfile << "if(att[" << index_for_features_cpy << "] " << "< " << value_of_features << ")\n";
+	indentation(number_of_recur, outputfile);
+	outputfile << "{\n";
+	make_decision(number_of_recur+1, left_subtree);
+	indentation(number_of_recur, outputfile);
+	outputfile << "}\n";
+
+
+	indentation(number_of_recur, outputfile);
+	outputfile << "else\n";
+	indentation(number_of_recur, outputfile);
+	outputfile << "{\n";
+	make_decision(number_of_recur+1, right_subtree);
+	indentation(number_of_recur, outputfile);
+	outputfile << "}\n";
+
+	if(nubmer_of_recur==1)
+		outputfile << "}\n";
+
+	return;
 }
