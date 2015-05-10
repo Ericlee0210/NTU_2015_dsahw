@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
 					double n;
 					sscanf(word, "%d%*c%f", &index, &n );
 					a.features[index] = n;	
+					flag = true;
 				}
 			}
 			container.push_back(a);

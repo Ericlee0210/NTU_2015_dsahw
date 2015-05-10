@@ -23,17 +23,11 @@ double totalConfusion(double a, double b, double c, double d)
 	double tmp2 = (c+d)/ (a+b+c+d);
 
 	if(a==0 && b==0)
-	{
 		return ( 99999 + tmp2*confusion(c,d) );
-	}
 	else if (c==0 && d==0)
-	{
 		return ( tmp1*confusion(a,b) + 99999  );
-	}
 	else
-	{
 		return ( tmp1*confusion(a,b) + tmp2*confusion(c, d) );
-	}
 }
 
 
@@ -63,10 +57,21 @@ double calCon(int i, int j, newVec& tree)
 	}
 
 	//開始計算總共的confusion
-	double total_con = totalConfusion(leftYN[0], leftYN[1], rightYN[0], rightYN[1]);
-	tree[j].confusion[i] = total_con;
+	double total_confusion = totalConfusion(leftYN[0], leftYN[1], rightYN[0], rightYN[1]);
+	tree[j].confusion[i] = total_confusion;
 
 	return tree[j].confusion[i];
+}
+
+void findCon(int i, int j, double confusion, locationOfMinCon& c)
+{
+	if( confusion < c.total_confusion) 
+	{
+		c.index_for_example = j;
+		c.index_for_features = i;
+		c.total_confusion = confusion;
+	}
+	return;
 }
 
 
@@ -113,7 +118,28 @@ void make_decision(int number_of_recur, newVec & tree, ofstream & outputfile)
 		for(j=0; j<number_of_example; j++)
 		{
 			double confusion = calCon(i, j, number_of_example, tree);
-			findCon(i, j, tree, tmp);  //function還沒寫
+			findCon(i, j, confusion, tmp); 
 		}
+	}
+
+	//無法切了，無論怎麼切都無法一分為二，其中一邊都是0Y0N，confusion超大	
+	if(tmp.totalConfusion >= 99999)
+	{
+		if(number_of_yes >= number_of_no)
+		{
+			indentation(nubmer_of_recur);
+			outputfile << "return 1;\n";
+		}
+		else
+		{
+			indentation(nubmer_of_recur);
+			outputfile << "return 0;\n";
+		}
+	}
+
+	//產生subtree
+	for(newVec::iterator q= tree.begin(); q!=tree.end(); q++)
+	{
+		if()
 	}
 }
