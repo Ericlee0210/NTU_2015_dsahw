@@ -14,15 +14,15 @@ int main(int argc, char *argv[])
 {
 	std::ifstream  pfile;
 	srand(time(NULL));
-	double epsilon;
-	char * epsilon_c;
+	int howManyTrees;
+	char * howManyTrees.c;
 	int number_of_recur = 1;  //跑幾次迴圈
 	char * fileName = NULL;   //用來讀檔案名
 	if( argc == 3 )
 	{
 		fileName = argv[1];
-		epsilon_c = argv[2];
-		epsilon =  atof(epsilon_c) ;
+		howManyTrees.c = argv[2];
+		howManyTrees =  atoi(howManyTrees.c) ;
 	}
 	else
 	{
@@ -72,36 +72,10 @@ int main(int argc, char *argv[])
 			}
 
 			delete[] cstring;
-			/*
-			istringstream ss(line);
-			char word[100];
-			int result;
-			bool flag = true;
-			將資料tokenize
-			while(ss > word)
-			{
-				if(flag)
-				{
-					sscanf(word, "%d" , &result);  //每筆資料的result
-					if(result > 0)
-						a.result = 1;
-					else
-						a.result = 0;
-					flag = false;
-				}
-				else
-				{
-					int index; //3:4.0000 3 is index, 4.0000 is n
-					double n;
-					sscanf(word, "%d%*c%lf", &index, &n );
-					a.features[index] = n;	
-					flag = true;
-				}
-			}
-			*/
 			container.push_back(a);
 		}
-		make_decision(number_of_recur, epsilon , biggest_index, container);
+
+		make_decision(number_of_recur, 0 , biggest_index, container);
 	}
 	pfile.close();
 	return 0;
