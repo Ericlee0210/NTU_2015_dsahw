@@ -2,10 +2,22 @@
 #include <iostream>
 #include <cmath>
 #include <ctime>
+#include <algorithm>
 #include "func.h"
 #include "structure.h"
 #include "locationOfMinCon.h"
 #include "exampleClass.h"
+
+class cmp_obj
+{
+public:
+	cmp_obj(int a): index(a){}
+	bool operator()(example& s, example& t)
+	{
+		return (s.features[index] < t.features[index]);
+	}
+	int index;
+};
 
 
 double confusion(double a, double b)
@@ -29,10 +41,12 @@ double totalConfusion(double a, double b, double c, double d)
 }
 
 
-double calCon(int i, int j, newVec& tree)
+double calCon(int i, int j, newVec& tree, double& th)
 {
 	int leftYN[2]  = {0,0};  //左邊for yes, 前面為no, 後為yes
 	int rightYN[2] = {0,0};  //右邊for no, 前面為no, 後為yes
+
+	th = (tree[j].features[i]+ tree[j-1].features[i])/2;
 
 	//統計當基準為tree[j].features[i]時，左右兩邊的Y/N共多少
 	for(newVec::iterator q = tree.begin(); q!=tree.end(); q++)
@@ -41,8 +55,8 @@ double calCon(int i, int j, newVec& tree)
 		/****************************************************/
 		/*這邊有個問題，features數值等於基準時，要算左邊還是右邊？***/
 		/****************************************************/
-		if( fabs(q->features[i] - tree[j].features[i]) < e ||
-			 q->features[i] < tree[j].features[i]
+		if( fabs(q->features[i] - th) < e ||
+			     q->features[i] < th
 		)  //左邊有多少Y/N
 		{
 			if(q->result==1)
@@ -66,13 +80,14 @@ double calCon(int i, int j, newVec& tree)
 	return tree[j].confusion[i];
 }
 
-void findCon(int i, int j, double confusion, locationOfMinCon& c)
+void findCon(int i, int j, double confusion, locationOfMinCon& c, double& threshold)
 {
 	if( confusion < c.total_confusion) 
 	{
 		c.index_for_example = j;
 		c.index_for_features = i;
 		c.total_confusion = confusion;
+		c.threshold = threshold;
 	}
 	return;
 }
@@ -85,8 +100,10 @@ void indentation(int number_of_recur)
 	}
 }
 
-void make_decision(int number_of_recur, double epsilon,  newVec & tree)
+void make_decision(int number_of_recur, double epsilon, int biggest_index,  newVec & tree)
 {
+	double e = 0.0000001;
+
 	//跑第一次，要印出function函數名字與argument
 	if(number_of_recur ==1)
 	{
@@ -94,7 +111,7 @@ void make_decision(int number_of_recur, double epsilon,  newVec & tree)
 		std::cout << "{\n";
 	}
 
-	int i, j; //i for every example, j for every features
+	int i, j; //i for every features, j for every example
 	int number_of_example = tree.size();
 
 	//統計目前tree的yes / no數量
@@ -161,16 +178,44 @@ void make_decision(int number_of_recur, double epsilon,  newVec & tree)
 	locationOfMinCon tmp;  //裡面包含 index for example, index for features, double for confusion
 	tmp.total_confusion =100;  //初始比較值，
 
+	double threshold = 0.0;
+
 	//找到切哪一刀，將tree劃分為二
-	for(i=0; i<maxfeatures; i++)
+	for(i=0; i<=biggest_index; i++)
 	{
+		//std::cout << number_of_recur <<  " searching " << i << std::endl;
+		sort( tree.begin(), tree.end(), cmp_obj(i) );
+		//for(int p=0; p<number_of_example; p++)
+		//{
+		//	std::cout << tree[p].features[i] << " ";
+		//}
+		//std::cout << std::endl;
+		double biggest_features = tree[0].features[i];
+
 		for(j=0; j<number_of_example; j++)
 		{
-			double confusion = calCon(i, j, tree);
-			findCon(i, j, confusion, tmp); 
+			if ( fabs( tree[j].features[i] - biggest_features ) < e )
+				continue;
+			else
+			{
+				if(j==number_of_example-1)
+					threshold = tree[j].features[i]+1;
+				biggest_features = tree[j].features[i];
+				double confusion = calCon(i, j, tree, threshold);
+				findCon(i, j, confusion, tmp, threshold); 				
+			}
 		}
 	}
 	
+	//if(tmp.threshold == 1)
+	//{
+	//	std::cout << number_of_recur << std::endl;
+	//	std::cout << tmp.index_for_features;
+	//}
+		
+
+
+
 	//無法切了，無論怎麼切都無法一分為二，其中一邊都是0Y0N，confusion超大	
 	/**********************************************/
 	/*這邊有個問題，yes與no數量一樣時，要return 多少？***/
@@ -191,11 +236,8 @@ void make_decision(int number_of_recur, double epsilon,  newVec & tree)
 		}
 	}
 
-	int index_for_example_cpy = tmp.index_for_example;
-	//std::cout << "index_for_example_cpy= " <<  tmp.index_for_example << std::endl;
 	int index_for_features_cpy = tmp.index_for_features;
 	//std::cout << "index_for_features= " << tmp.index_for_features << std::endl;
-	double value_of_features = tree[index_for_example_cpy].features[index_for_features_cpy];
 	
 	newVec left_subtree;
 	newVec right_subtree;
@@ -203,12 +245,11 @@ void make_decision(int number_of_recur, double epsilon,  newVec & tree)
 	//產生subtree
 	for(newVec::iterator q= tree.begin(); q!=tree.end(); q++)
 	{
-		double e = 0.0000001;
 		/****************************************************/
 		/*這邊有個問題，features數值等於基準時，要算左邊還是右邊？***/
 		/****************************************************/
-		if( fabs( q->features[index_for_features_cpy] - tree[index_for_example_cpy].features[index_for_features_cpy] ) < e || 
-			q->features[index_for_features_cpy] < tree[index_for_example_cpy].features[index_for_features_cpy] 
+		if( fabs( q->features[index_for_features_cpy] - tmp.threshold ) < e || 
+			      q->features[index_for_features_cpy] < tmp.threshold 
 		  ) 
 			right_subtree.push_back(*q);
 		else
@@ -216,10 +257,10 @@ void make_decision(int number_of_recur, double epsilon,  newVec & tree)
 	}
 
 	indentation(number_of_recur);
-	std::cout << "if(attr[" << index_for_features_cpy << "] " << "> " << value_of_features << ")\n";
+	std::cout << "if(attr[" << index_for_features_cpy << "] " << "> " << tmp.threshold << ")\n";
 	indentation(number_of_recur);
 	std::cout << "{\n";
-	make_decision(number_of_recur+1, epsilon, left_subtree);
+	make_decision(number_of_recur+1, epsilon, biggest_index, left_subtree);
 	indentation(number_of_recur);
 	std::cout << "}\n";
 
@@ -228,7 +269,7 @@ void make_decision(int number_of_recur, double epsilon,  newVec & tree)
 	std::cout << "else\n";
 	indentation(number_of_recur);
 	std::cout << "{\n";
-	make_decision(number_of_recur+1, epsilon, right_subtree);
+	make_decision(number_of_recur+1, epsilon, biggest_index, right_subtree);
 	indentation(number_of_recur);
 	std::cout << "}\n";
 

@@ -6,6 +6,7 @@ struct locationOfMinCon
 	int index_for_example;
 	int index_for_features;
 	double total_confusion;
+	double threshold;
 };
 
 #endif

@@ -43,6 +43,8 @@ int main(int argc, char *argv[])
 		newVec container;     //用來裝所有example的container
 		string istring;  //搭配getline()，掃每一行文字
 		
+		int biggest_index = 1;
+
 		while( getline(pfile, istring) )
 		{
 			example a; //裝一筆資料
@@ -63,6 +65,8 @@ int main(int argc, char *argv[])
 			while(tmp != NULL)
 			{
 				int index = atoi(tmp);
+				if(index > biggest_index)
+					biggest_index = index;
 				tmp = strtok(NULL, ": ");
 				//cout << "index= " << index << "   ";
 				//cout << "features= " << static_cast<double> ( atof(tmp) ) << endl;
@@ -100,7 +104,7 @@ int main(int argc, char *argv[])
 			*/
 			container.push_back(a);
 		}
-		make_decision(number_of_recur, epsilon, container);
+		make_decision(number_of_recur, epsilon , biggest_index, container);
 	}
 	pfile.close();
 	return 0;
