@@ -3,6 +3,7 @@
 #include <fstream>  //ifstream
 #include <sstream>  //istringstream
 #include <string>
+#include <string.h>
 #include <ctime>
 #include <algorithm>
 #include "forest_func.h"
