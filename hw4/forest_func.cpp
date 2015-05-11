@@ -60,7 +60,10 @@ double calCon(int i, int j, newVec& tree, double& th)
 	int leftYN[2]  = {0,0};  //左邊for yes, 前面為no, 後為yes
 	int rightYN[2] = {0,0};  //右邊for no, 前面為no, 後為yes
 
-	th = (tree[j].features[i]+ tree[j-1].features[i])/2;
+	if(j==0)
+		th = tree[0].features[i] - 1;
+	else
+		th = (tree[j].features[i]+ tree[j-1].features[i])/2;
 
 	//統計當基準為tree[j].features[i]時，左右兩邊的Y/N共多少
 	for(newVec::iterator q = tree.begin(); q!=tree.end(); q++)
@@ -199,6 +202,7 @@ void make_decision(int number_of_recur, int theBirthOfTree , double epsilon, int
 	{
 		//std::cout << number_of_recur <<  " searching " << i << std::endl;
 		sort( tree.begin(), tree.end(), cmp_obj(i) );
+		threshold = tree[0].features[i]-1;
 		//for(int p=0; p<number_of_example; p++)
 		//{
 		//	std::cout << tree[p].features[i] << " ";
