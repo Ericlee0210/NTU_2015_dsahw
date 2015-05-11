@@ -1,6 +1,6 @@
 CPPFLAG= -O2 -std=c++11 -Wall
-FNAME=a1a.train
-PNAME=a1a.test
+FNAME=a3a.txt
+PNAME=a3a.t
 EPSILON=0.05
 T=50
 RM=rm -rf
