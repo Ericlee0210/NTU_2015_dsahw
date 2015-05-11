@@ -73,33 +73,6 @@ int main(int argc, char *argv[])
 			}
 
 			delete[] cstring;
-			/*
-			istringstream ss(line);
-			char word[100];
-			int result;
-			bool flag = true;
-			將資料tokenize
-			while(ss > word)
-			{
-				if(flag)
-				{
-					sscanf(word, "%d" , &result);  //每筆資料的result
-					if(result > 0)
-						a.result = 1;
-					else
-						a.result = 0;
-					flag = false;
-				}
-				else
-				{
-					int index; //3:4.0000 3 is index, 4.0000 is n
-					double n;
-					sscanf(word, "%d%*c%lf", &index, &n );
-					a.features[index] = n;	
-					flag = true;
-				}
-			}
-			*/
 			container.push_back(a);
 		}
 		make_decision(number_of_recur, epsilon , biggest_index, container);
