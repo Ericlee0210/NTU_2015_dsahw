@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
 		while( getline(pfile, istring) )
 		{
 			example a; //裝一筆資料
-			a.exampleInit();
 
 			char * cstring, *tmp; 
 			cstring = new char[istring.size()+1];
