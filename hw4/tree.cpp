@@ -2,8 +2,10 @@
 #include <iostream> //printf()
 #include <fstream>  //ifstream
 #include <sstream>  //istringstream
+#include <string.h>
 #include <string>
 #include <ctime>
+#include <algorithm>
 #include "func.h"
 #include "structure.h"
 #include "exampleClass.h"
