@@ -5,8 +5,8 @@ EPSILON=0.05
 T=50
 RM=rm -rf
 
-tree: tree.cpp exampleClass.cpp exampleClass.h locationOfMinCon.h func.cpp func.h structure.h
-	g++ $(CPPFLAG) tree.cpp exampleClass.cpp func.cpp -o $@
+tree: tree.cpp  exampleClass.h locationOfMinCon.h func.cpp func.h structure.h
+	g++ $(CPPFLAG) tree.cpp func.cpp -o $@
 
 tree_pred_func.cpp: tree $(FNAME)
 	./tree $(FNAME) $(EPSILON) > $@
@@ -20,8 +20,8 @@ predict_tree: tree_predictor.cpp tree_pred_func.cpp $(PNAME)
 
 run_tree: predict_tree
 
-forest: forest.cpp exampleClass.cpp exampleClass.h locationOfMinCon.h forest_func.cpp forest_func.h structure.h
-	g++ $(CPPFLAG) forest.cpp exampleClass.cpp forest_func.cpp -o $@
+forest: forest.cpp exampleClass.h locationOfMinCon.h forest_func.cpp forest_func.h structure.h
+	g++ $(CPPFLAG) forest.cpp forest_func.cpp -o $@
 
 forest_pred_func.cpp: forest $(FNAME)
 	./forest $(FNAME) $(T) > $@
