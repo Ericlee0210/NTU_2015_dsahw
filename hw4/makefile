@@ -1,6 +1,6 @@
 CPPFLAG= -O2 -std=c++11 -Wall
-FNAME=sample.txt
-PNAME=a9a.t
+FNAME=a1a.txt
+PNAME=a1a.t
 EPSILON=0.05
 T=50
 RM=rm -rf
