@@ -23,11 +23,46 @@ void preorder_string_avl(const struct avl_node *node)
 	}
 }
 
-//void preorder_string_bst()
+void preorder_string_bst(const struct bst_node *node)
+{
+	if(node == NULL)
+		return;
+	printf("%s ", ((char*)node->bst_data));
+	if(node->bst_link[0] != NULL || node->bst_link[1] != NULL)
+	{
+		putchar('(');
+		preorder_string_bst(node->bst_link[0]);
+		putchar(',');
+		putchar(' ');
+		preorder_string_bst(node->bst_link[1]);
+		putchar(')');
+	}
+}
 
-//void preorder_string_rb()
+void preorder_string_rb(const struct rb_node *node)
+{
+	if(node == NULL)
+		return;
+	printf("%s ", ((char*)node->rb_data));
+	if(node->rb_link[0] != NULL || node->rb_link[1] != NULL)
+	{
+		putchar('(');
+		preorder_string_rb(node->rb_link[0]);
+		putchar(',');
+		putchar(' ');
+		preorder_string_rb(node->rb_link[1]);
+		putchar(')');
+	}
+}
 
-//int string_style_compare()
+int string_cstyle_compare(const void *pa, const void *pb, void *param)
+{
+	const char* a = (const char*)pa;
+	const char* b = (const char*)pb;
+	if     (strcmp(a,b)<0)	return -1;
+	else if(strcmp(a,b)>0)	return +1;
+	else                    return 0;
+}
 
 int main()
 {
